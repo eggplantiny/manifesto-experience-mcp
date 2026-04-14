@@ -9,21 +9,21 @@ importers:
   .:
     dependencies:
       '@manifesto-ai/governance':
-        specifier: ^3.11.0
-        version: 3.11.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
+        specifier: ^3.11.1
+        version: 3.11.1(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
       '@manifesto-ai/lineage':
-        specifier: ^3.10.0
-        version: 3.10.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
+        specifier: ^3.10.1
+        version: 3.10.1(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
       '@manifesto-ai/sdk':
-        specifier: ^3.13.0
-        version: 3.13.0(zod@4.3.6)
+        specifier: ^3.13.1
+        version: 3.13.1(zod@4.3.6)
       better-sqlite3:
         specifier: ^11.8.1
         version: 11.10.0
     devDependencies:
       '@manifesto-ai/compiler':
-        specifier: ^3.4.0
-        version: 3.4.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
+        specifier: ^3.5.0
+        version: 3.5.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
       '@manifesto-ai/skills':
         specifier: ^1.0.1
         version: 1.0.1
@@ -214,8 +214,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@manifesto-ai/compiler@3.4.0':
-    resolution: {integrity: sha512-V60a+G9tEOjcgsPrt2LM+B0orDvLPTzdYZFlKnFVqQ6gJ6weD66Aw1FJVGDduSjLoWQinEBGTEcb7Wob1I/u3w==}
+  '@manifesto-ai/compiler@3.5.0':
+    resolution: {integrity: sha512-HNFpOG5mV2hn/2XQrn114Huuup+3theMTXMCyyXOzvhsmJd+OjTa7EnaavOzD+BmZmXhfeikyKcKmifDEL/J6w==}
     peerDependencies:
       '@anthropic-ai/sdk': ^0.26.0
       '@manifesto-ai/core': ^2.12.0
@@ -235,8 +235,8 @@ packages:
     peerDependencies:
       zod: ^4.3.6
 
-  '@manifesto-ai/governance@3.11.0':
-    resolution: {integrity: sha512-D8PHYO8LvgxMe4OwJC05eLIsaMuXktwcB8G2UlwI2N+PSovFwtzI7Bm20bGFG0YCTX/E/+LNpDY5jw8gMe5B6g==}
+  '@manifesto-ai/governance@3.11.1':
+    resolution: {integrity: sha512-Mm3EqGuVgk/2AAT1QkijvuhBtj/vgml14cfDJ1dK1FO56sGwf+uiODyTF575QcrF5VjAearo2dUef1QMXCoxsA==}
     peerDependencies:
       '@manifesto-ai/core': ^2.12.0
 
@@ -245,13 +245,13 @@ packages:
     peerDependencies:
       '@manifesto-ai/core': ^2.12.0
 
-  '@manifesto-ai/lineage@3.10.0':
-    resolution: {integrity: sha512-zR3MyhPOujyr/jVsvAZWe0euTGmvRy/2OYvY/nTQMG4xU11r58SpJaF6/8zvKh+eah1VrfeQv0GRVZAcK1t0Og==}
+  '@manifesto-ai/lineage@3.10.1':
+    resolution: {integrity: sha512-dQU0u3+2BnRTn94qCw02Zc6qgge0Oxs3qg3bSpTH73m9t0V1wvw3mk0hQkIfrRovYEqNc1t4J+kOx61+QzAgiA==}
     peerDependencies:
       '@manifesto-ai/core': ^2.12.0
 
-  '@manifesto-ai/sdk@3.13.0':
-    resolution: {integrity: sha512-YYbAfpNsTuCGt6JLqWshVNC/TMS3P8E8HHlWXhMHZiIEvN2PLPGzu25E6jq+mY8fk79yp3F8j11L+Z4d3dKP5Q==}
+  '@manifesto-ai/sdk@3.13.1':
+    resolution: {integrity: sha512-Ax77g0DsdDQWZzc8kr+inCes2JP6y3rHL+ywuiV4/pPzrvrm8h0Tb7b8wDpGS/CJYPv8+hKUjMVhH5ONZ63lPQ==}
 
   '@manifesto-ai/skills@1.0.1':
     resolution: {integrity: sha512-5skp/pcsJBByQDN+Vn6/sQgUb2WTeGcy1zwU4iwcrlq5ZZMgkb7q30UlbS8tjPtWnk7skAu5XGbUclAn/YK1Vw==}
@@ -845,7 +845,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@manifesto-ai/compiler@3.4.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
+  '@manifesto-ai/compiler@3.5.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
     dependencies:
       '@manifesto-ai/core': 2.12.0(zod@4.3.6)
       unplugin: 3.0.0
@@ -855,11 +855,11 @@ snapshots:
     dependencies:
       zod: 4.3.6
 
-  '@manifesto-ai/governance@3.11.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
+  '@manifesto-ai/governance@3.11.1(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
     dependencies:
       '@manifesto-ai/core': 2.12.0(zod@4.3.6)
-      '@manifesto-ai/lineage': 3.10.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
-      '@manifesto-ai/sdk': 3.13.0(zod@4.3.6)
+      '@manifesto-ai/lineage': 3.10.1(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
+      '@manifesto-ai/sdk': 3.13.1(zod@4.3.6)
     transitivePeerDependencies:
       - '@anthropic-ai/sdk'
       - openai
@@ -870,19 +870,19 @@ snapshots:
     dependencies:
       '@manifesto-ai/core': 2.12.0(zod@4.3.6)
 
-  '@manifesto-ai/lineage@3.10.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
+  '@manifesto-ai/lineage@3.10.1(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)':
     dependencies:
       '@manifesto-ai/core': 2.12.0(zod@4.3.6)
-      '@manifesto-ai/sdk': 3.13.0(zod@4.3.6)
+      '@manifesto-ai/sdk': 3.13.1(zod@4.3.6)
     transitivePeerDependencies:
       - '@anthropic-ai/sdk'
       - openai
       - vite
       - zod
 
-  '@manifesto-ai/sdk@3.13.0(zod@4.3.6)':
+  '@manifesto-ai/sdk@3.13.1(zod@4.3.6)':
     dependencies:
-      '@manifesto-ai/compiler': 3.4.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
+      '@manifesto-ai/compiler': 3.5.0(@manifesto-ai/core@2.12.0(zod@4.3.6))(zod@4.3.6)
       '@manifesto-ai/core': 2.12.0(zod@4.3.6)
       '@manifesto-ai/host': 2.9.0(@manifesto-ai/core@2.12.0(zod@4.3.6))
     transitivePeerDependencies:

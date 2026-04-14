@@ -65,13 +65,13 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@manifesto-ai/governance": "^3.11.0",
-    "@manifesto-ai/lineage": "^3.10.0",
-    "@manifesto-ai/sdk": "^3.13.0",
+    "@manifesto-ai/governance": "^3.11.1",
+    "@manifesto-ai/lineage": "^3.10.1",
+    "@manifesto-ai/sdk": "^3.13.1",
     "better-sqlite3": "^11.8.1"
   },
   "devDependencies": {
-    "@manifesto-ai/compiler": "^3.4.0",
+    "@manifesto-ai/compiler": "^3.5.0",
     "@manifesto-ai/skills": "^1.0.1",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^25.6.0",
