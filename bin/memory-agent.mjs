@@ -7,10 +7,20 @@ import { createMemoryAgent } from "../dist/index.js";
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const serverVersion = packageJson.version ?? "0.0.0";
 
-const agent = await createMemoryAgent({
+const createAgentOptions = {
   dataDir: process.env.MEMORY_AGENT_DATA_DIR,
   providerKind: normalizeProviderKind(process.env.LLM_PROVIDER),
-});
+};
+
+const supportedProtocolVersions = new Set(["2024-11-05", "2025-11-25"]);
+let agentPromise = null;
+
+function getAgent() {
+  if (!agentPromise) {
+    agentPromise = createMemoryAgent(createAgentOptions);
+  }
+  return agentPromise;
+}
 
 const tools = [
   {
@@ -116,16 +126,22 @@ async function drain() {
 async function handleMessage(message) {
   switch (message.method) {
     case "initialize":
-      respond(message.id, {
-        protocolVersion: "2024-11-05",
-        capabilities: {
-          tools: {}
-        },
-        serverInfo: {
-          name: "manifesto-memory-agent",
-          version: serverVersion
-        }
-      });
+      {
+        const requestedProtocolVersion = String(message.params?.protocolVersion ?? "2024-11-05");
+        const protocolVersion = supportedProtocolVersions.has(requestedProtocolVersion)
+          ? requestedProtocolVersion
+          : "2024-11-05";
+        respond(message.id, {
+          protocolVersion,
+          capabilities: {
+            tools: {}
+          },
+          serverInfo: {
+            name: "manifesto-memory-agent",
+            version: serverVersion
+          }
+        });
+      }
       return;
     case "notifications/initialized":
       return;
@@ -176,9 +192,10 @@ async function handleMessage(message) {
 }
 
 async function callTool(name, args) {
+  const agent = await getAgent();
   switch (name) {
     case "commit":
-      return callCommit(args.action, args.input ?? {});
+      return callCommit(agent, args.action, args.input ?? {});
     case "get_snapshot":
       return agent.getSnapshot();
     case "get_available_actions":
@@ -188,13 +205,13 @@ async function callTool(name, args) {
     case "get_world_snapshot":
       return agent.getWorldSnapshot(String(args.worldId ?? ""));
     case "simulate":
-      return simulateAction(args.action, args.input ?? {});
+      return simulateAction(agent, args.action, args.input ?? {});
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
 }
 
-async function callCommit(action, input) {
+async function callCommit(agent, action, input) {
   switch (action) {
     case "write":
       return agent.write(String(input.content ?? ""));
@@ -217,7 +234,7 @@ async function callCommit(action, input) {
   }
 }
 
-function simulateAction(action, input) {
+function simulateAction(agent, action, input) {
   switch (action) {
     case "write":
       return agent.runtime.simulate(agent.runtime.MEL.actions.write, String(input.content ?? ""));
@@ -277,5 +294,7 @@ function formatError(error) {
 }
 
 function shutdown() {
-  agent.dispose();
+  getAgent().then((agent) => {
+    agent.dispose();
+  }).catch(() => {});
 }
