@@ -1,0 +1,75 @@
+name: npm-publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      npm_tag:
+        description: npm dist-tag
+        required: true
+        default: latest
+        type: string
+      dry_run:
+        description: Run npm publish with --dry-run
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Pack tarball
+        id: pack
+        run: |
+          mkdir -p .artifacts
+          TARBALL="$(npm pack --pack-destination .artifacts)"
+          echo "tarball=${TARBALL}" >> "$GITHUB_OUTPUT"
+          echo "Packed .artifacts/${TARBALL}"
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: .artifacts/${{ steps.pack.outputs.tarball }}
+
+      - name: Publish dry run
+        if: ${{ inputs.dry_run }}
+        run: npm publish ./.artifacts/${{ steps.pack.outputs.tarball }} --tag "${{ inputs.npm_tag }}" --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: ${{ !inputs.dry_run }}
+        run: npm publish ./.artifacts/${{ steps.pack.outputs.tarball }} --tag "${{ inputs.npm_tag }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

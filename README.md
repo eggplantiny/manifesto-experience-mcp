@@ -95,6 +95,7 @@ pnpm mcp
 현재 기본 env:
 - `LLM_PROVIDER=ollama`
 - `LLM_MODEL=gemma3:4b-it-qat`
+- `OLLAMA_BASE_URL=http://127.0.0.1:11434`
 - `OLLAMA_EMBEDDING_MODEL=nomic-embed-text-v2-moe:latest`
 - `MEMORY_AGENT_DATA_DIR=./.data/mcp`
 
@@ -113,6 +114,7 @@ trusted single-process 환경 기준 권장 실행:
 ```bash
 LLM_PROVIDER=ollama \
 LLM_MODEL=gemma3:4b-it-qat \
+OLLAMA_BASE_URL=http://ollama.internal:11434 \
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text-v2-moe:latest \
 MEMORY_AGENT_DATA_DIR=/var/lib/manifesto-memory-agent \
 manifesto-memory-agent-mcp
@@ -126,17 +128,37 @@ manifesto-memory-agent-mcp
 
 ## 5. npm/bin 패키지로 설치
 
-로컬 tarball 생성:
+npm 레지스트리에서 직접 설치:
+
+```bash
+npm install -g manifesto-memory-agent
+```
+
+설치 없이 일회성 실행:
+
+```bash
+npx manifesto-memory-agent-mcp
+```
+
+로컬 검증이나 pre-publish 확인이 필요하면 tarball 경로도 사용할 수 있다:
 
 ```bash
 pnpm pack
-```
-
-생성된 tarball 설치:
-
-```bash
 npm install -g ./manifesto-memory-agent-0.5.2.tgz
 ```
+
+GitHub Actions 수동 npm 배포:
+- workflow: `.github/workflows/npm-publish.yml`
+- trigger: `workflow_dispatch`
+- required secret: `NPM_TOKEN`
+- inputs:
+  - `npm_tag`: 기본 `latest`
+  - `dry_run`: 기본 `true`
+
+권장 순서:
+1. 먼저 `dry_run=true`로 실행
+2. tarball artifact 확인
+3. 같은 ref에서 `dry_run=false`로 재실행
 
 설치 후 사용 가능한 binary:
 - `manifesto-memory-agent`
@@ -152,6 +174,7 @@ npm install -g ./manifesto-memory-agent-0.5.2.tgz
       "env": {
         "LLM_PROVIDER": "ollama",
         "LLM_MODEL": "gemma3:4b-it-qat",
+        "OLLAMA_BASE_URL": "http://127.0.0.1:11434",
         "OLLAMA_EMBEDDING_MODEL": "nomic-embed-text-v2-moe:latest",
         "MEMORY_AGENT_DATA_DIR": "/tmp/manifesto-memory-agent"
       }

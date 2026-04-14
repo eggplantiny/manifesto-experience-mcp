@@ -40,6 +40,7 @@ pnpm mcp
 
 - `LLM_PROVIDER`
 - `LLM_MODEL`
+- `OLLAMA_BASE_URL`
 - `OLLAMA_EMBEDDING_MODEL`
 - `MEMORY_AGENT_DATA_DIR`
 
@@ -48,6 +49,7 @@ pnpm mcp
 ```bash
 LLM_PROVIDER=ollama
 LLM_MODEL=gemma3:4b-it-qat
+OLLAMA_BASE_URL=http://127.0.0.1:11434
 OLLAMA_EMBEDDING_MODEL=nomic-embed-text-v2-moe:latest
 MEMORY_AGENT_DATA_DIR=/var/lib/manifesto-memory-agent
 ```
