@@ -25,8 +25,8 @@
     "CLAUDE.md"
   ],
   "bin": {
-    "manifesto-memory-agent": "./dist/cli.js",
-    "manifesto-memory-agent-mcp": "./bin/memory-agent.mjs"
+    "manifesto-memory-agent": "./bin/manifesto-memory-agent",
+    "manifesto-memory-agent-mcp": "./bin/manifesto-memory-agent-mcp"
   },
   "scripts": {
     "build": "tsup",

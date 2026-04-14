@@ -164,6 +164,15 @@ GitHub Actions 수동 npm 배포:
 - `manifesto-memory-agent`
 - `manifesto-memory-agent-mcp`
 
+전역 설치된 binary는 가능하면 같은 설치 prefix의 `node`를 우선 사용한다.
+즉 `nvm`으로 여러 Node 버전을 같이 두는 환경에서도, 패키지를 설치한 prefix의 `node`를 먼저 잡도록 wrapper를 넣었다.
+
+강제로 특정 `node`를 쓰고 싶으면:
+
+```bash
+MANIFESTO_MEMORY_AGENT_NODE=/absolute/path/to/node manifesto-memory-agent-mcp
+```
+
 설치 후 MCP 예시:
 
 ```json

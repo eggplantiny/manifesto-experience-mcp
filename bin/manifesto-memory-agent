@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ORIGINAL_PATH="$0"
+BIN_DIR="$(CDPATH= cd -- "$(dirname -- "$ORIGINAL_PATH")" && pwd)"
+
+SOURCE="${BASH_SOURCE[0]:-$0}"
+while [ -h "$SOURCE" ]; do
+  SOURCE_DIR="$(CDPATH= cd -- "$(dirname -- "$SOURCE")" && pwd)"
+  TARGET="$(readlink "$SOURCE")"
+  case "$TARGET" in
+    /*) SOURCE="$TARGET" ;;
+    *) SOURCE="$SOURCE_DIR/$TARGET" ;;
+  esac
+done
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$SOURCE")" && pwd)"
+PACKAGE_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
+
+NODE_BIN="${MANIFESTO_MEMORY_AGENT_NODE:-}"
+if [ -z "$NODE_BIN" ] && [ -x "$BIN_DIR/node" ]; then
+  NODE_BIN="$BIN_DIR/node"
+fi
+if [ -z "$NODE_BIN" ]; then
+  NODE_BIN="$(command -v node)"
+fi
+
+exec "$NODE_BIN" "$PACKAGE_ROOT/dist/cli.js" "$@"

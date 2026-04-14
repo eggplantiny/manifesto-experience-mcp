@@ -54,6 +54,9 @@ OLLAMA_EMBEDDING_MODEL=nomic-embed-text-v2-moe:latest
 MEMORY_AGENT_DATA_DIR=/var/lib/manifesto-memory-agent
 ```
 
+여러 Node 버전을 같이 쓰는 환경에서는 설치된 binary가 같은 prefix의 `node`를 우선 사용한다.
+강제 override가 필요하면 `MANIFESTO_MEMORY_AGENT_NODE=/absolute/path/to/node`를 사용할 수 있다.
+
 ## 운영 전제
 
 - shared/internal MCP는 trusted single-process 환경 전제
