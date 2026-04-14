@@ -92,6 +92,43 @@ pnpm mcp
 
 저장소 루트의 [.mcp.json](/home/eggp/dev/workspaces/eggp/manifesto-memory-agent/.mcp.json)은 로컬 개발용 예시다.
 
+권장 실행 모델은 아래 두 가지다.
+
+### 권장 1. 절대 경로 `node` + 절대 경로 script
+
+가장 안정적이다. `nvm`, shell PATH, shebang 해석 차이를 전부 피한다.
+
+예시는 [examples/mcp.absolute-node.json](/home/eggp/dev/workspaces/eggp/manifesto-memory-agent/examples/mcp.absolute-node.json)에 있다.
+
+핵심 형태:
+
+```json
+{
+  "command": "/absolute/path/to/node",
+  "args": [
+    "/absolute/path/to/manifesto-memory-agent/bin/memory-agent.mjs"
+  ]
+}
+```
+
+### 권장 2. project-local install + local `node`
+
+패키지를 consumer project의 `node_modules`에 설치하고, 그 프로젝트에서 고정한 `node`로 실행한다.
+전역 설치보다 재현성이 높다.
+
+예시는 [examples/mcp.local-install.json](/home/eggp/dev/workspaces/eggp/manifesto-memory-agent/examples/mcp.local-install.json)에 있다.
+
+핵심 형태:
+
+```json
+{
+  "command": "/absolute/path/to/node",
+  "args": [
+    "/absolute/path/to/your-project/node_modules/manifesto-memory-agent/bin/memory-agent.mjs"
+  ]
+}
+```
+
 현재 기본 env:
 - `LLM_PROVIDER=ollama`
 - `LLM_MODEL=gemma3:4b-it-qat`
@@ -125,6 +162,7 @@ manifesto-memory-agent-mcp
 - SQLite 파일은 해당 process가 단독으로 사용
 - 인증/멀티테넌시는 이번 패키지 범위에 포함되지 않음
 - shared MCP는 내부 trusted 환경 전제
+- shared 배포도 절대 경로 `node` 실행을 권장
 
 ## 5. npm/bin 패키지로 설치
 
@@ -166,6 +204,11 @@ GitHub Actions 수동 npm 배포:
 
 전역 설치된 binary는 가능하면 같은 설치 prefix의 `node`를 우선 사용한다.
 즉 `nvm`으로 여러 Node 버전을 같이 두는 환경에서도, 패키지를 설치한 prefix의 `node`를 먼저 잡도록 wrapper를 넣었다.
+
+다만 운영 권장 순서는 여전히 아래와 같다:
+1. 절대 경로 `node` + 절대 경로 script
+2. project-local install + local `node`
+3. 전역 설치 binary
 
 강제로 특정 `node`를 쓰고 싶으면:
 
