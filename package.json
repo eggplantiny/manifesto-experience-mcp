@@ -26,7 +26,8 @@
   ],
   "bin": {
     "manifesto-memory-agent": "./bin/manifesto-memory-agent",
-    "manifesto-memory-agent-mcp": "./bin/manifesto-memory-agent-mcp"
+    "manifesto-memory-agent-mcp": "./bin/manifesto-memory-agent-mcp",
+    "manifesto-experience-agent-mcp": "./bin/manifesto-experience-agent-mcp"
   },
   "scripts": {
     "build": "tsup",
