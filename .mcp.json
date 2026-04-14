@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "memory-agent": {
+      "command": "node",
+      "args": ["./bin/memory-agent.mjs"],
+      "env": {
+        "LLM_PROVIDER": "ollama",
+        "LLM_MODEL": "gemma3:4b-it-qat",
+        "OLLAMA_EMBEDDING_MODEL": "nomic-embed-text-v2-moe:latest",
+        "MEMORY_AGENT_DATA_DIR": "./.data/mcp"
+      }
+    }
+  }
+}

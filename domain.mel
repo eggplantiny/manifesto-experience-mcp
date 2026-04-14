@@ -1,0 +1,278 @@
+domain MemoryAgent {
+  type MemoryConfig = {
+    windowSize: number,
+    maxBudget: number,
+    summaryMaxLen: number,
+    reflectionMaxLen: number,
+    decayFactor: number,
+    crystallizeThreshold: number,
+    reinforceSuccess: number,
+    reinforceFailure: number
+  }
+
+  type ReflectionResult = {
+    mood: string,
+    reflection: string,
+    memorySummary: string
+  }
+
+  type EntryRecord = {
+    eventId: string,
+    summary: string,
+    mood: string
+  }
+
+  type OutcomeRecord = {
+    eventId: string,
+    actionWorldId: string,
+    outcome: string,
+    delta: number
+  }
+
+  type ConsolidationRecord = {
+    eventId: string,
+    decayFactor: number,
+    crystallizeThreshold: number
+  }
+
+  type RecallHit = {
+    worldId: string,
+    summary: string,
+    mood: string,
+    score: number,
+    strength: number
+  }
+
+  type StrongPattern = {
+    worldId: string,
+    pattern: string,
+    strength: number
+  }
+
+  state {
+    config: MemoryConfig = {
+      windowSize: 10,
+      maxBudget: 5,
+      summaryMaxLen: 100,
+      reflectionMaxLen: 300,
+      decayFactor: 0.9,
+      crystallizeThreshold: 7.0,
+      reinforceSuccess: 3.0,
+      reinforceFailure: 0
+    }
+
+    currentDraft: string | null = null
+    lastReflection: ReflectionResult | null = null
+    status: "idle" | "reflecting" | "reinforcing" | "recalling" | "refining" | "consolidating" = "idle"
+    recentWindow: Array<string> = []
+    totalEntries: number = 0
+    selfSummary: string = "아직 기록이 없습니다."
+    lastEntry: EntryRecord | null = { eventId: "", summary: "", mood: "" }
+    lastOutcome: OutcomeRecord | null = { eventId: "", actionWorldId: "", outcome: "", delta: 0 }
+    lastConsolidation: ConsolidationRecord | null = { eventId: "", decayFactor: 0, crystallizeThreshold: 0 }
+    recalled: Array<RecallHit> | null = null
+    recallBudget: number = 0
+    recallHistory: Array<string> = []
+    recallRefinement: string | null = null
+    strongPatterns: Array<StrongPattern> = []
+  }
+
+  computed hasMemory = gt(totalEntries, 0)
+  computed hasRecallBudget = gt(recallBudget, 0)
+  computed hasRecalledResults = isNotNull(recalled)
+  computed recallExhausted = and(eq(recallBudget, 0), gt(len(recallHistory), 0))
+  computed hasStrongPatterns = gt(len(strongPatterns), 0)
+
+  action configure(newConfig: MemoryConfig)
+    available when eq(status, "idle")
+    dispatchable when and(
+      gt(newConfig.windowSize, 0),
+      lte(newConfig.windowSize, 50),
+      gt(newConfig.maxBudget, 0),
+      lte(newConfig.maxBudget, 10),
+      gt(newConfig.summaryMaxLen, 0),
+      lte(newConfig.summaryMaxLen, 500),
+      gt(newConfig.reflectionMaxLen, 0),
+      lte(newConfig.reflectionMaxLen, 2000),
+      gt(newConfig.decayFactor, 0.0),
+      lt(newConfig.decayFactor, 1.0),
+      gt(newConfig.crystallizeThreshold, 0.0),
+      gt(newConfig.reinforceSuccess, 0.0),
+      lt(newConfig.reinforceFailure, 0.0)
+    )
+  {
+    onceIntent {
+      patch config = newConfig
+    }
+  }
+
+  action write(content: string)
+    available when eq(status, "idle")
+    dispatchable when neq(trim(content), "")
+  {
+    onceIntent {
+      patch currentDraft = content
+      patch status = "reflecting"
+      effect mind.reflect({
+        content: content,
+        recentWindow: recentWindow,
+        selfSummary: selfSummary,
+        totalEntries: totalEntries,
+        strongPatterns: strongPatterns,
+        summaryMaxLen: config.summaryMaxLen,
+        reflectionMaxLen: config.reflectionMaxLen,
+        into: lastReflection
+      })
+    }
+
+    when and(isNotNull(lastReflection), eq(status, "reflecting")) {
+      patch recentWindow = slice(
+        append(recentWindow, lastReflection.memorySummary),
+        max(sub(len(append(recentWindow, lastReflection.memorySummary)), config.windowSize), 0),
+        len(append(recentWindow, lastReflection.memorySummary))
+      )
+      patch totalEntries = add(totalEntries, 1)
+      patch selfSummary = lastReflection.reflection
+      patch lastEntry.eventId = $meta.intentId
+      patch lastEntry.summary = lastReflection.memorySummary
+      patch lastEntry.mood = lastReflection.mood
+      patch currentDraft = null
+      patch lastReflection = null
+      patch status = "idle"
+    }
+  }
+
+  action recordOutcome(actionWorldId: string, outcome: string)
+    available when and(eq(status, "idle"), hasMemory)
+    dispatchable when and(
+      neq(trim(actionWorldId), ""),
+      or(eq(outcome, "success"), eq(outcome, "failure"))
+    )
+  {
+    onceIntent {
+      patch status = "reflecting"
+      effect mind.reflectOnOutcome({
+        actionWorldId: actionWorldId,
+        outcome: outcome,
+        recentWindow: recentWindow,
+        selfSummary: selfSummary,
+        summaryMaxLen: config.summaryMaxLen,
+        reflectionMaxLen: config.reflectionMaxLen,
+        into: lastReflection
+      })
+    }
+
+    when and(isNotNull(lastReflection), eq(status, "reflecting")) {
+      patch selfSummary = lastReflection.reflection
+      patch lastEntry.eventId = $meta.intentId
+      patch lastEntry.summary = lastReflection.memorySummary
+      patch lastEntry.mood = lastReflection.mood
+      patch lastOutcome.eventId = $meta.intentId
+      patch lastOutcome.actionWorldId = actionWorldId
+      patch lastOutcome.outcome = outcome
+      patch lastOutcome.delta = eq(outcome, "success")
+        ? config.reinforceSuccess
+        : config.reinforceFailure
+      patch lastReflection = null
+      patch status = "reinforcing"
+      effect pheromone.reinforce({
+        worldId: actionWorldId,
+        delta: eq(outcome, "success")
+          ? config.reinforceSuccess
+          : config.reinforceFailure
+      })
+    }
+
+    when eq(status, "reinforcing") {
+      patch status = "idle"
+    }
+  }
+
+  action consolidate()
+    available when and(eq(status, "idle"), hasMemory)
+  {
+    onceIntent {
+      patch lastConsolidation.eventId = $meta.intentId
+      patch lastConsolidation.decayFactor = config.decayFactor
+      patch lastConsolidation.crystallizeThreshold = config.crystallizeThreshold
+      patch status = "consolidating"
+      effect pheromone.consolidate({
+        decayFactor: config.decayFactor,
+        crystallizeThreshold: config.crystallizeThreshold,
+        into: strongPatterns
+      })
+    }
+
+    when eq(status, "consolidating") {
+      patch status = "idle"
+    }
+  }
+
+  action recall(query: string, budget: number)
+    available when and(eq(status, "idle"), hasMemory)
+    dispatchable when and(
+      neq(trim(query), ""),
+      gt(budget, 0),
+      lte(budget, config.maxBudget)
+    )
+  {
+    onceIntent {
+      patch status = "recalling"
+      patch recallBudget = budget
+      patch recallHistory = [query]
+      patch recalled = null
+      patch recallRefinement = null
+      effect memory.recall({ query: query, topK: 5, into: recalled })
+    }
+
+    when and(isNotNull(recalled), eq(status, "recalling")) {
+      patch recallBudget = sub(recallBudget, 1)
+      patch status = "idle"
+    }
+  }
+
+  action refineRecall()
+    available when and(
+      eq(status, "idle"),
+      hasRecallBudget,
+      isNotNull(recalled)
+    )
+  {
+    onceIntent {
+      patch status = "refining"
+      effect mind.refineQuery({
+        originalQueries: recallHistory,
+        previousResults: recalled,
+        into: recallRefinement
+      })
+    }
+
+    when and(isNotNull(recallRefinement), eq(status, "refining")) {
+      patch recallHistory = append(recallHistory, recallRefinement)
+      patch recalled = null
+      patch status = "recalling"
+      effect memory.recall({
+        query: recallRefinement,
+        topK: 5,
+        into: recalled
+      })
+      patch recallRefinement = null
+    }
+
+    when and(isNotNull(recalled), eq(status, "recalling")) {
+      patch recallBudget = sub(recallBudget, 1)
+      patch status = "idle"
+    }
+  }
+
+  action endRecall()
+    available when or(isNotNull(recalled), recallExhausted)
+  {
+    onceIntent {
+      patch recalled = null
+      patch recallBudget = 0
+      patch recallHistory = []
+      patch recallRefinement = null
+    }
+  }
+}

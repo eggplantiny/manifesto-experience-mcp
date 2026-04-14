@@ -1,0 +1,70 @@
+{
+  "name": "manifesto-memory-agent",
+  "version": "0.5.2",
+  "description": "Manifesto pheromone memory protocol with library, CLI, and MCP server entrypoints",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "domain.mel",
+    "bin",
+    ".mcp.json",
+    "CLAUDE.md"
+  ],
+  "bin": {
+    "manifesto-memory-agent": "./dist/cli.js",
+    "manifesto-memory-agent-mcp": "./bin/memory-agent.mjs"
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "test": "pnpm typecheck",
+    "test:pheromone:e2e": "pnpm build && node scripts/test-pheromone-lifecycle.mjs",
+    "lint": "pnpm run typecheck",
+    "repl": "node dist/cli.js",
+    "mcp": "node ./bin/memory-agent.mjs",
+    "pack:local": "pnpm pack"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "keywords": [
+    "manifesto",
+    "memory",
+    "lineage",
+    "sqlite",
+    "mcp",
+    "ollama",
+    "pheromone",
+    "typescript"
+  ],
+  "author": "manifesto-memory-agent",
+  "sideEffects": false,
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@manifesto-ai/governance": "^3.11.0",
+    "@manifesto-ai/lineage": "^3.10.0",
+    "@manifesto-ai/sdk": "^3.13.0",
+    "better-sqlite3": "^11.8.1"
+  },
+  "devDependencies": {
+    "@manifesto-ai/compiler": "^3.4.0",
+    "@manifesto-ai/skills": "^1.0.1",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^25.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
+  }
+}
