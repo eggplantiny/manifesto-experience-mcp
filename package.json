@@ -1,6 +1,6 @@
 {
   "name": "manifesto-memory-agent",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Manifesto pheromone memory protocol with library, CLI, and MCP server entrypoints",
   "repository": {
     "type": "git",
